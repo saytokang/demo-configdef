@@ -5,8 +5,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
@@ -65,8 +65,16 @@ public class ConfigDef {
 			throw new ConfigDefException(name + " 는(은) 이미 등록되어 있습니다.");
 		}
 
-		ConfigKey newConfigKey = ConfigKey.builder().name(name).type(type).value(value).validator(validator)
-				.description(description).build();
+		// @formatter:off
+		ConfigKey newConfigKey = ConfigKey.builder()
+				.name(name)
+				.type(type)
+				.value(value)
+				.validator(validator)
+				.description(description)
+				.build();
+		// @formatter:on
+		
 		if (validator != null) {
 			validator.verify(name, value);
 		}
@@ -77,20 +85,14 @@ public class ConfigDef {
 
 	public Map<String, Object> parse(Properties props) {
 		Map<String, Object> values = new HashMap<>();
+
 		props.forEach((k, v) -> {
 			ConfigKey configKey = findByName(k);
 			if (configKey == null) {
 				throw new ConfigDefException(k + " key not found");
 			}
 
-			Object value = null;
-			try {
-				value = operators.get(configKey.type).convert(v);
-			}
-			catch (Exception e) {
-				log.warn("parsing error. set default value");
-				value = configKey.value;
-			}
+			Object value = parseTypeOrDefault(v, configKey);
 
 			if (configKey.validator != null) {
 				configKey.validator.verify(k.toString(), v);
@@ -99,6 +101,18 @@ public class ConfigDef {
 		});
 
 		return values;
+	}
+
+	private Object parseTypeOrDefault(Object v, ConfigKey configKey) {
+		Object value;
+		try {
+			value = operators.get(configKey.type).convert(v);
+		}
+		catch (Exception e) {
+			log.warn("parsing error. set default value");
+			value = configKey.value;
+		}
+		return value;
 	}
 
 	ConfigKey findByName(Object key) {
