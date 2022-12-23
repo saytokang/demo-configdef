@@ -1,6 +1,6 @@
 package com.example.demogwconfig.conf.validator;
 
-import com.example.demogwconfig.conf.ConfigException;
+import com.example.demogwconfig.conf.ConfigDefException;
 
 public class IntRangeValidator implements Validator {
 
@@ -27,20 +27,20 @@ public class IntRangeValidator implements Validator {
 				val = Integer.parseInt(value.toString());
 			}
 			catch (Exception e) {
-				throw new ConfigException(value + " 값은 int 값만 허용합니다.");
+				throw new ConfigDefException(value + " 값은 int 값만 허용합니다.");
 			}
 			checkBoundary(name, val);
 		}
 		else {
 			String msg = String.format("%s 값은 INT 이고, between %d and %d 입니다.", name, min, max);
-			throw new ConfigException(msg);
+			throw new ConfigDefException(msg);
 		}
 	}
 
 	private void checkBoundary(String name, int val) {
 		if (val < min || val > max) {
 			String msg = String.format("%s 값은 between %d and %d 입니다.", name, min, max);
-			throw new ConfigException(msg);
+			throw new ConfigDefException(msg);
 		}
 	}
 

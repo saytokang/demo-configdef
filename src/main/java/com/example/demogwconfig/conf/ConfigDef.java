@@ -62,7 +62,7 @@ public class ConfigDef {
 		Assert.notNull(value, "value is required.");
 
 		if (configKeys.containsKey(name)) {
-			throw new ConfigException(name + " 는(은) 이미 등록되어 있습니다.");
+			throw new ConfigDefException(name + " 는(은) 이미 등록되어 있습니다.");
 		}
 
 		ConfigKey newConfigKey = ConfigKey.builder().name(name).type(type).value(value).validator(validator)
@@ -80,7 +80,7 @@ public class ConfigDef {
 		props.forEach((k, v) -> {
 			ConfigKey configKey = findByName(k);
 			if (configKey == null) {
-				throw new ConfigException(k + " key not found");
+				throw new ConfigDefException(k + " key not found");
 			}
 
 			Object value = null;
@@ -142,6 +142,12 @@ public class ConfigDef {
 
 	}
 
+	public enum Type {
+
+		INT, LONG, STRING, LIST, BOOLEAN, MAP;
+
+	}
+
 	private static class TypeUtils {
 
 		static boolean isStringType(Object obj) {
@@ -154,14 +160,14 @@ public class ConfigDef {
 			}
 
 			if (!isStringType(value)) {
-				throw new ConfigException(value + " 는 int 타입이어야 합니다.");
+				throw new ConfigDefException(value + " 는 int 타입이어야 합니다.");
 			}
 
 			try {
 				return Integer.valueOf(value.toString());
 			}
 			catch (Exception e) {
-				throw new ConfigException(value + " 는 Integer 타입이어야 합니다.");
+				throw new ConfigDefException(value + " 는 Integer 타입이어야 합니다.");
 			}
 		}
 
@@ -171,14 +177,14 @@ public class ConfigDef {
 			}
 
 			if (!isStringType(value)) {
-				throw new ConfigException(value + " 는 boolean 타입이어야 합니다.");
+				throw new ConfigDefException(value + " 는 boolean 타입이어야 합니다.");
 			}
 
 			try {
 				return Boolean.valueOf(value.toString());
 			}
 			catch (Exception e) {
-				throw new ConfigException(value + " 는 boolean 타입이어야 합니다.");
+				throw new ConfigDefException(value + " 는 boolean 타입이어야 합니다.");
 			}
 		}
 
@@ -187,7 +193,7 @@ public class ConfigDef {
 				return value;
 			}
 
-			throw new ConfigException(value + " 는 string 타입이어야 합니다.");
+			throw new ConfigDefException(value + " 는 string 타입이어야 합니다.");
 		}
 
 		static Object toLong(Object value) {
@@ -196,14 +202,14 @@ public class ConfigDef {
 			}
 
 			if (!isStringType(value)) {
-				throw new ConfigException(value + " 는 long 타입이어야 합니다.");
+				throw new ConfigDefException(value + " 는 long 타입이어야 합니다.");
 			}
 
 			try {
 				return Long.valueOf(value.toString());
 			}
 			catch (Exception e) {
-				throw new ConfigException(value + " 는 long 타입이어야 합니다.");
+				throw new ConfigDefException(value + " 는 long 타입이어야 합니다.");
 			}
 		}
 
@@ -213,7 +219,7 @@ public class ConfigDef {
 			}
 
 			if (!isStringType(value)) {
-				throw new ConfigException(value + "는 <key>:<value> 형식이어야 합니다.");
+				throw new ConfigDefException(value + "는 <key>:<value> 형식이어야 합니다.");
 			}
 
 			Map<String, String> map = new HashMap<>();
@@ -224,7 +230,7 @@ public class ConfigDef {
                 .forEach(word -> {
                     String[] entry = word.split("\\s*:\\s*", -1);
                     if (entry.length != 2) {
-                        throw new ConfigException("Map entry should be <key>:<value>.");
+                        throw new ConfigDefException("Map entry should be <key>:<value>.");
                     }
                     map.put(entry[0], entry[1]);
                 });
@@ -239,7 +245,7 @@ public class ConfigDef {
 			}
 
 			if (!isStringType(value)) {
-				throw new ConfigException(value + " 는 , 구분자를 포함하고 있어야 합니다.");
+				throw new ConfigDefException(value + " 는 , 구분자를 포함하고 있어야 합니다.");
 			}
 
 			// @formatter:off

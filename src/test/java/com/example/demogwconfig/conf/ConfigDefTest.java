@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.example.demogwconfig.conf.ConfigDef.Type;
 import com.example.demogwconfig.conf.validator.IntRangeValidator;
 import com.example.demogwconfig.conf.validator.RegExpValidator;
 import com.example.demogwconfig.conf.validator.Validator;
@@ -23,19 +24,19 @@ public class ConfigDefTest {
 	@Test
 	@DisplayName("ConfigDef 생성자 필수값 체크")
 	public void test_1() {
-		assertThrows(Exception.class, () -> new ConfigDef().define(null, null, null));
+		assertThrows(IllegalArgumentException.class, () -> new ConfigDef().define(null, null, null));
 	}
 
 	@Test
 	@DisplayName("ConfigDef 생성자 필수값 체크")
 	public void test_2() {
-		assertThrows(Exception.class, () -> new ConfigDef().define("a", Type.INT, null));
+		assertThrows(IllegalArgumentException.class, () -> new ConfigDef().define("a", Type.INT, null));
 	}
 
 	@Test
 	@DisplayName("ConfigDef 생성자 필수값 체크")
 	public void test_3() {
-		assertThrows(Exception.class, () -> new ConfigDef().define("", Type.INT, 9));
+		assertThrows(IllegalArgumentException.class, () -> new ConfigDef().define("", Type.INT, 9));
 	}
 
 	@Test
@@ -46,7 +47,7 @@ public class ConfigDefTest {
 	}
 
 	@Test
-    @DisplayName("ConfigDef 여러개 설정하고, 설정된 값 확인")
+	@DisplayName("ConfigDef 여러개 설정하고, 설정된 값 확인")
 	public void test1() {
 		// @formatter:off
 		ConfigDef def = new ConfigDef()
@@ -69,7 +70,7 @@ public class ConfigDefTest {
 	}
 
 	@Test
-    @DisplayName("ConfigDef 1개 설정하고, 설정된 값 확인.")
+	@DisplayName("ConfigDef 1개 설정하고, 설정된 값 확인.")
 	public void test2() {
 		// @formatter:off
 		ConfigDef def = new ConfigDef()
@@ -155,7 +156,7 @@ public class ConfigDefTest {
 		Validator validator = new IntRangeValidator(1, 100);
 
 		// @formatter:off
-		assertThrows(ConfigException.class,
+		assertThrows(ConfigDefException.class,
                     () -> new ConfigDef().define(name, Type.INT, 101, validator));
         // @formatter:on
 
@@ -185,7 +186,7 @@ public class ConfigDefTest {
 		Properties props = new Properties();
 		props.put(name, "-1");
 
-		assertThrows(ConfigException.class, () -> def.parse(props));
+		assertThrows(ConfigDefException.class, () -> def.parse(props));
 	}
 
 	@Test
@@ -212,7 +213,7 @@ public class ConfigDefTest {
 		Properties props = new Properties();
 		props.put(name, "abc");
 
-		assertThrows(ConfigException.class, () -> def.parse(props));
+		assertThrows(ConfigDefException.class, () -> def.parse(props));
 	}
 
 	@Test
@@ -225,7 +226,7 @@ public class ConfigDefTest {
 		Properties props = new Properties();
 		props.put(name, "abc!@111");
 
-		assertThrows(ConfigException.class, () -> def.parse(props));
+		assertThrows(ConfigDefException.class, () -> def.parse(props));
 	}
 
 }
